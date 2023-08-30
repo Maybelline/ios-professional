@@ -7,11 +7,22 @@
 
 import UIKit
 
+protocol LogoutDelegate: AnyObject{
+    func didLogout()
+}
+
+protocol LoginViewControllerDelegate: AnyObject{
+    func didLogin()
+    
+}
+
 class LoginViewController: UIViewController {
     
     let loginView = LoginView()
     let signInButton = UIButton(type: .system)
     let errorMessageLabel = UILabel()
+    
+    weak var delegate: LoginViewControllerDelegate? //This var is weak to avoid retain cycles. We want to hold a weak reference to things that are reaching out to us because they're going to have a strong reference to us. The AppDelegate is going to have a strong reference to our view controller.
     
     var username: String? {
         return loginView.usernameTextField.text
@@ -25,6 +36,10 @@ class LoginViewController: UIViewController {
         super.viewDidLoad()
         style()
         layout()
+    }
+    override func viewDidDisappear(_ animated: Bool){
+        super.viewDidDisappear(animated)
+        signInButton.configuration?.showsActivityIndicator = false
     }
 }
 
@@ -78,12 +93,13 @@ extension LoginViewController{
             assertionFailure("Username / password should never be nil") //This tells the developer that you have a programmer error
             return
         }
-        if username.isEmpty || password.isEmpty{
-            configureView(withMessage:"Username / password can not be blank")
-            return
-        }
-        if username == "Kevin" && password == "Welcome"{
+//        if username.isEmpty || password.isEmpty{
+//            configureView(withMessage:"Username / password can not be blank")
+//            return
+//        }
+        if username == "" && password == ""{
             signInButton.configuration?.showsActivityIndicator = true
+            delegate?.didLogin()
         }
         else{
             configureView(withMessage: "Incorrect username / password")

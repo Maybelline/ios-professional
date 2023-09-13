@@ -145,11 +145,11 @@ extension LoginViewController{
             assertionFailure("Username / password should never be nil") //This tells the developer that you have a programmer error
             return
         }
-        if username.isEmpty || password.isEmpty{
-            configureView(withMessage:"Username / password can not be blank")
-            return
-        }
-        if username == "Flynn" && password == "Welcome"{
+//        if username.isEmpty || password.isEmpty{
+//            configureView(withMessage:"Username / password can not be blank")
+//            return
+//        }
+        if username == "" && password == ""{
             signInButton.configuration?.showsActivityIndicator = true
             delegate?.didLogin()
         }

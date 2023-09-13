@@ -145,11 +145,11 @@ extension LoginViewController{
             assertionFailure("Username / password should never be nil") //This tells the developer that you have a programmer error
             return
         }
-//        if username.isEmpty || password.isEmpty{
-//            configureView(withMessage:"Username / password can not be blank")
-//            return
-//        }
-        if username == "" && password == ""{
+        if username.isEmpty || password.isEmpty{
+            configureView(withMessage:"Username / password can not be blank")
+            return
+        }
+        if username == "Flynn" && password == "Welcome"{
             signInButton.configuration?.showsActivityIndicator = true
             delegate?.didLogin()
         }
@@ -161,6 +161,19 @@ extension LoginViewController{
     private func configureView(withMessage message: String){ // the word withMessage is the argument label and the word message is the named parameter
         errorMessageLabel.isHidden = false
         errorMessageLabel.text = message
+        shakeButton()
+    }
+    
+    private func shakeButton(){
+        let animation = CAKeyframeAnimation()
+        animation.keyPath = "position.x"
+        animation.values = [0, 10, -10, 10, 0]
+        animation.keyTimes = [0, 0.16, 0.5, 0.83, 1]
+        animation.duration = 0.4
+        
+        animation.isAdditive = true
+        signInButton.layer.add(animation, forKey: "shake")
+        
     }
 }
 

@@ -30,22 +30,20 @@ class AccountSummaryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-        setupNavigationBar()
-        //fetchAccounts()
-        fetchDataAndLoadViews()
-    }
-    
-    func setupNavigationBar(){
-        navigationItem.rightBarButtonItem = logoutBarButtonItem
     }
 }
 
 extension AccountSummaryViewController {
     private func setup() {
+        setupNavigationBar()
         setupTableView()
         setupTableHeaderView()
+        fetchData()
     }
     
+    func setupNavigationBar(){
+        navigationItem.rightBarButtonItem = logoutBarButtonItem
+    }
     private func setupTableView() {
         tableView.backgroundColor = appColor //This eliminates the white gap that appears when pull down to refresh is done
         tableView.delegate = self
@@ -135,28 +133,34 @@ extension AccountSummaryViewController {
 
 // MARK: - Networking
 extension AccountSummaryViewController {
-    private func fetchDataAndLoadViews() {
+    private func fetchData() {
+        let group = DispatchGroup()
         
+        group.enter()
         fetchProfile(forUserId: "1") { result in
             switch result {
             case .success(let profile):
                 self.profile = profile
                 self.configureTableHeaderView(with: profile)
-                self.tableView.reloadData()
             case .failure(let error):
                 print(error.localizedDescription)
             }
+            group.leave()
         }
         
+        group.enter()
         fetchAccounts(forUserId: "1") { result in
             switch result {
             case .success(let accounts):
                 self.accounts = accounts
                 self.configureTableCells(with: accounts)
-                self.tableView.reloadData()
             case .failure(let error):
                 print(error.localizedDescription)
             }
+            group.leave()
+        }
+        group.notify(queue: .main){
+            self.tableView.reloadData()
         }
     }
     
